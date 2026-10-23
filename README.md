@@ -1,8 +1,8 @@
-# MediaGo Ads MCP Server (`@mediago/ads-mcp`)
+# MediaGo Monetization SDK MCP Server (`mediago_monetization_sdk_mcp`)
 
 面向 **MediaGo / AdMaster Android 广告 SDK (`cc.admaster.android:sdk`)** 的官方 Model Context Protocol (MCP) Server。
 
-与官方 Skill 仓库 [`mediago-ads-skills`](https://github.com/mediagoinapp-star/mediago-ads-skills) 配合使用，采用 **「Skill 定流程 + MCP 供工具/查真源/断日志」** 的双引擎架构：
+与官方 Skill 仓库 [`mediago_monetization_sdk_skills`](https://github.com/mediagoinapp-star/mediago_monetization_sdk_skills) 配合使用，采用 **「Skill 定流程 + MCP 供工具/查真源/断日志」** 的双引擎架构：
 - **零外部依赖**：基于原生 Node.js (`>=18`) 实现标准 JSON-RPC 2.0 `stdio` 协议，无需 `npm install` 任何第三方包即可直接运行。
 - **单一事实源**：直接读取内置 [`data/compatibility.json`](./data/compatibility.json) 与 SDK 源码级状态机定义，彻底杜绝大模型编造版本号、写错包名或混淆聚合参数键名。
 
@@ -30,9 +30,9 @@
 ```json
 {
   "mcpServers": {
-    "mediago-ads-mcp": {
+    "mediago_monetization_sdk_mcp": {
       "command": "npx",
-      "args": ["-y", "github:mediagoinapp-star/mediago-ads-mcp"]
+      "args": ["-y", "github:mediagoinapp-star/mediago_monetization_sdk_mcp"]
     }
   }
 }
@@ -40,7 +40,7 @@
 
 **Claude Code 一键命令行安装：**
 ```bash
-claude mcp add mediago-ads-mcp -- npx -y github:mediagoinapp-star/mediago-ads-mcp
+claude mcp add mediago_monetization_sdk_mcp -- npx -y github:mediagoinapp-star/mediago_monetization_sdk_mcp
 ```
 
 ### 方式 B：通过 npm 官方包接入（发布至 npmjs.com 后可用）
@@ -48,24 +48,23 @@ claude mcp add mediago-ads-mcp -- npx -y github:mediagoinapp-star/mediago-ads-mc
 ```json
 {
   "mcpServers": {
-    "mediago-ads-mcp": {
+    "mediago_monetization_sdk_mcp": {
       "command": "npx",
-      "args": ["-y", "@mediago/ads-mcp@latest"]
+      "args": ["-y", "mediago_monetization_sdk_mcp@latest"]
     }
   }
 }
 ```
-> 若使用非组织作用域包名发布（如 `mediago-ads-mcp`），将 `args` 改为 `["-y", "mediago-ads-mcp@latest"]` 即可。
 
 ### 方式 C：本地克隆调试
 
 ```json
 {
   "mcpServers": {
-    "mediago_ads": {
+    "mediago_monetization_sdk_mcp": {
       "command": "node",
       "args": [
-        "/abs/path/to/mediago-ads-mcp/bin/mediago-ads-mcp.js"
+        "/abs/path/to/mediago_monetization_sdk_mcp/bin/mediago_monetization_sdk_mcp.js"
       ]
     }
   }
@@ -76,7 +75,7 @@ claude mcp add mediago-ads-mcp -- npx -y github:mediagoinapp-star/mediago-ads-mc
 
 ```bash
 # 自检列出 5 个工具
-node ./bin/mediago-ads-mcp.js --self-test
+node ./bin/mediago_monetization_sdk_mcp.js --self-test
 
 # 运行全套协议与工具单元测试
 npm test

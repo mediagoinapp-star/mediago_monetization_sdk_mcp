@@ -1,6 +1,6 @@
-# MediaGo Ads MCP 功能演进规划 (Roadmap & Backlog)
+# MediaGo Monetization SDK MCP 功能演进规划 (Roadmap & Backlog)
 
-本文档记录 `@mediago/ads-mcp` 的已上线功能（Phase 1）以及暂缓开发的储备功能清单（Backlog）。
+本文档记录 `mediago_monetization_sdk_mcp` 的已上线功能（Phase 1）以及暂缓开发的储备功能清单（Backlog）。
 
 ---
 

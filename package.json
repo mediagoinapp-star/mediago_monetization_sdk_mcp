@@ -1,10 +1,10 @@
 {
-  "name": "@mediago/ads-mcp",
+  "name": "mediago_monetization_sdk_mcp",
   "version": "1.0.0",
   "description": "Official Model Context Protocol (MCP) Server for MediaGo / AdMaster Android & Unity SDK integration, mediation configuration, error code diagnosis, and Logcat trace analysis.",
   "main": "src/server.js",
   "bin": {
-    "mediago-ads-mcp": "./bin/mediago-ads-mcp.js"
+    "mediago_monetization_sdk_mcp": "./bin/mediago_monetization_sdk_mcp.js"
   },
   "files": [
     "bin/",
@@ -14,18 +14,18 @@
     "ROADMAP.md"
   ],
   "scripts": {
-    "sync-compat": "node -e \"const fs=require('fs'),p=require('path'),src=p.resolve(__dirname,'../mediago-ads-skills/compatibility/compatibility.json'),dst=p.resolve(__dirname,'data/compatibility.json');if(fs.existsSync(src)){fs.mkdirSync(p.dirname(dst),{recursive:true});fs.copyFileSync(src,dst);console.log('Synced compatibility.json from ../mediago-ads-skills');}\"",
+    "sync-compat": "node -e \"const fs=require('fs'),p=require('path'),src=p.resolve(__dirname,'../mediago_monetization_sdk_skills/compatibility/compatibility.json'),dst=p.resolve(__dirname,'data/compatibility.json');if(fs.existsSync(src)){fs.mkdirSync(p.dirname(dst),{recursive:true});fs.copyFileSync(src,dst);console.log('Synced compatibility.json from ../mediago_monetization_sdk_skills');}\"",
     "prepack": "npm run sync-compat",
-    "start": "node ./bin/mediago-ads-mcp.js",
+    "start": "node ./bin/mediago_monetization_sdk_mcp.js",
     "test": "node ./test/test-mcp.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mediagoinapp-star/mediago-ads-mcp.git"
+    "url": "git+https://github.com/mediagoinapp-star/mediago_monetization_sdk_mcp.git"
   },
-  "homepage": "https://github.com/mediagoinapp-star/mediago-ads-mcp#readme",
+  "homepage": "https://github.com/mediagoinapp-star/mediago_monetization_sdk_mcp#readme",
   "bugs": {
-    "url": "https://github.com/mediagoinapp-star/mediago-ads-mcp/issues"
+    "url": "https://github.com/mediagoinapp-star/mediago_monetization_sdk_mcp/issues"
   },
   "publishConfig": {
     "access": "public"

@@ -27,7 +27,7 @@ function callMcpTool(name, args) {
 
 // 1. Test initialize & tools/list
 const initResult = rpcCall(1, 'initialize', { protocolVersion: '2024-11-05' });
-assert.strictEqual(initResult.serverInfo.name, 'mediago-ads-mcp');
+assert.strictEqual(initResult.serverInfo.name, 'mediago_monetization_sdk_mcp');
 
 const listResult = rpcCall(2, 'tools/list', {});
 assert.strictEqual(listResult.tools.length, 5);

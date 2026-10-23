@@ -3,7 +3,7 @@
 const { TOOL_DEFINITIONS, callTool } = require('./tools');
 
 const SERVER_INFO = {
-  name: 'mediago-ads-mcp',
+  name: 'mediago_monetization_sdk_mcp',
   version: '1.0.0'
 };
 
