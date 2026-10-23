@@ -13,7 +13,7 @@ const TOOL_DEFINITIONS = [
   {
     name: 'get_sdk_compatibility',
     description:
-      '查询 MediaGo / AdMaster Android SDK 及各聚合平台 Adapter (AdMob / AppLovin MAX / TradPlus / TopOn) 的官方兼容版本矩阵、Maven 坐标、Android/Unity API 级别要求，以及 Gradle / Kotlin DSL / Unity EDM4U 依赖配置片段（单一事实源：compatibility.json）。',
+      '查询 MediaGo Monetization SDK 及各聚合平台 Adapter (AdMob / AppLovin MAX / TradPlus / TopOn) 的官方兼容版本矩阵、Maven 坐标、Android/Unity API 级别要求，以及 Gradle / Kotlin DSL / Unity EDM4U 依赖配置片段（单一事实源：compatibility.json）。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -46,7 +46,7 @@ const TOOL_DEFINITIONS = [
   {
     name: 'get_ad_integration_template',
     description:
-      '获取经过源码验证的 MediaGo / AdMaster SDK 接入代码模板与防踩坑签名约束。支持初始化(init)、激励视频(rewarded)、插屏(interstitial)、开屏(splash)、原生信息流(native)、横幅(banner)，支持 Java / Kotlin / Unity C# 及常规模式或 Client Bidding (IBiddingAd) 竞价模式。',
+      '获取经过源码验证的 MediaGo Monetization SDK 接入代码模板与防踩坑签名约束。支持初始化(init)、激励视频(rewarded)、插屏(interstitial)、开屏(splash)、原生信息流(native)、横幅(banner)，支持 Java / Kotlin / Unity C# 及常规模式或 Client Bidding (IBiddingAd) 竞价模式。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -80,7 +80,7 @@ const TOOL_DEFINITIONS = [
   {
     name: 'get_mediation_adapter_config',
     description:
-      '生成第三方聚合平台（AdMob / AppLovin MAX / TradPlus / TopOn International (ThinkUp) / TopOn Legacy (AnyThink)）接入 MediaGo 自定义广告网络所需的 Maven 依赖坐标、各广告样式的全限定 Adapter 类名清单，以及聚合后台 Server Parameter JSON（自动区分 AdMob 的 ad_unit_id 与其他平台的 placement_id）。',
+      '生成第三方聚合平台（AdMob / AppLovin MAX / TradPlus / TopOn International (ThinkUp) / TopOn Legacy (AnyThink)）接入 MediaGo Monetization SDK 自定义广告网络所需的 Maven 依赖坐标、各广告样式的全限定 Adapter 类名清单，以及聚合后台 Server Parameter JSON（自动区分 AdMob 的 ad_unit_id 与其他平台的 placement_id）。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -98,11 +98,11 @@ const TOOL_DEFINITIONS = [
         },
         app_id: {
           type: 'string',
-          description: '可选：填入你的 32 位 AdMaster App ID（不填则默认生成官方测试 App ID）'
+          description: '可选：填入你的 32 位 MediaGo Monetization SDK App ID（不填则默认生成官方测试 App ID）'
         },
         placement_id: {
           type: 'string',
-          description: '可选：填入你的纯数字 AdMaster 广告位 ID（不填则默认生成对应样式的官方测试广告位 ID）'
+          description: '可选：填入你的纯数字 MediaGo Monetization SDK 广告位 ID（不填则默认生成对应样式的官方测试广告位 ID）'
         }
       },
       required: ['platform']
@@ -111,7 +111,7 @@ const TOOL_DEFINITIONS = [
   {
     name: 'diagnose_error_code',
     description:
-      '诊断 MediaGo / AdMaster 广告请求或展示失败错误码。支持客户端 7 位 SDK 错误码（1010001~4030007）、服务端 4 位状态码（2000 无填充、3000~3004 请求异常、4000~4004 DSP 异常、1000~1999 内部错误）以及聚合 Adapter 错误码（AdMob 100~104、TopOn 1001~1007），明确区分“客户端接入 Bug”与“服务端无填充”，并给出重试建议与修复代码。',
+      '诊断 MediaGo Monetization SDK 广告请求或展示失败错误码。支持客户端 7 位 SDK 错误码（1010001~4030007）、服务端 4 位状态码（2000 无填充、3000~3004 请求异常、4000~4004 DSP 异常、1000~1999 内部错误）以及聚合 Adapter 错误码（AdMob 100~104、TopOn 1001~1007），明确区分“客户端接入 Bug”与“服务端无填充”，并给出重试建议与修复代码。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -132,7 +132,7 @@ const TOOL_DEFINITIONS = [
   {
     name: 'analyze_logcat_trace',
     description:
-      '解析 Android Logcat 中的 MediaGo / AdMaster 广告日志（支持 [Funnel] 10 阶段生命周期日志、AdMaster/<Module> 调试日志及宿主 [Ads] 桥接日志），自动还原 INIT#0 -> REQUESTING#1 -> PARSING#2 -> CACHING#3 -> READY#4 -> SHOW_CALLED#5 -> SHOWING#6 -> RENDERING#7 -> PLAYING#8 -> CLOSED#9 全链路状态机，定位断点阶段、耗时瓶颈与异常原因。',
+      '解析 Android Logcat 中的 MediaGo Monetization SDK 广告日志（支持 [Funnel] 10 阶段生命周期日志、AdMaster/<Module> 调试日志及宿主 [Ads] 桥接日志），自动还原 INIT#0 -> REQUESTING#1 -> PARSING#2 -> CACHING#3 -> READY#4 -> SHOW_CALLED#5 -> SHOWING#6 -> RENDERING#7 -> PLAYING#8 -> CLOSED#9 全链路状态机，定位断点阶段、耗时瓶颈与异常原因。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -188,7 +188,7 @@ function handleGetSdkCompatibility(args = {}) {
     buildSnippet = `
 // settings.gradle.kts 中确保包含 mavenCentral() 与 google()
 dependencies {
-    // MediaGo / AdMaster 核心 SDK
+    // MediaGo Monetization SDK 核心依赖
     implementation("${coreArtifact}")${adapterLines ? '\n    // 聚合平台 Adapter\n' + adapterLines : ''}
 }`.trim();
   } else if (dsl === 'unity-edm4u') {
@@ -209,7 +209,7 @@ dependencies {
     buildSnippet = `
 // settings.gradle 或根 build.gradle 中确保包含 mavenCentral() 与 google()
 dependencies {
-    // MediaGo / AdMaster 核心 SDK
+    // MediaGo Monetization SDK 核心依赖
     implementation '${coreArtifact}'${adapterLines ? '\n    // 聚合平台 Adapter\n' + adapterLines : ''}
 }`.trim();
   }

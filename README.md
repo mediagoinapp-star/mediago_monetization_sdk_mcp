@@ -1,6 +1,6 @@
 # MediaGo Monetization SDK MCP Server (`mediago_monetization_sdk_mcp`)
 
-面向 **MediaGo / AdMaster Android 广告 SDK (`cc.admaster.android:sdk`)** 的官方 Model Context Protocol (MCP) Server。
+面向 **MediaGo Monetization SDK (`cc.admaster.android:sdk`)** 的官方 Model Context Protocol (MCP) Server。
 
 与官方 Skill 仓库 [`mediago_monetization_sdk_skills`](https://github.com/mediagoinapp-star/mediago_monetization_sdk_skills) 配合使用，采用 **「Skill 定流程 + MCP 供工具/查真源/断日志」** 的双引擎架构：
 - **零外部依赖**：基于原生 Node.js (`>=18`) 实现标准 JSON-RPC 2.0 `stdio` 协议，无需 `npm install` 任何第三方包即可直接运行。

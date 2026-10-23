@@ -7,7 +7,7 @@ function resolveCompatibilityPath() {
   const candidates = [
     process.env.MEDIAGO_COMPATIBILITY_JSON_PATH,
     path.resolve(__dirname, '../data/compatibility.json'),
-    path.resolve(__dirname, '../../mediago-ads-skills/compatibility/compatibility.json')
+    path.resolve(__dirname, '../../mediago_monetization_sdk_skills/compatibility/compatibility.json')
   ].filter(Boolean);
 
   for (const p of candidates) {
@@ -368,8 +368,8 @@ const ERROR_CODE_DB = {
     layer: 'mediation_admob',
     category: 'SERVER_NO_FILL',
     should_retry: true,
-    summary: 'AdMob Adapter 透传底层 AdMaster SDK 错误',
-    root_cause: '底层 AdMaster SDK 返回了加载或展示错误（需查看内部 cause 错误码）。',
+    summary: 'AdMob Adapter 透传底层 MediaGo Monetization SDK 错误',
+    root_cause: '底层 MediaGo Monetization SDK 返回了加载或展示错误（需查看内部 cause 错误码）。',
     troubleshooting_steps: [
       '开启 AdMasterSetting.getInstance().setDebugLogEnable(true) 查看底层 7 位或 4 位错误码。'
     ],
@@ -398,7 +398,7 @@ const ERROR_CODE_DB = {
     summary: 'AdMob Adapter 返回广告为空',
     root_cause: '请求成功但无填充。',
     troubleshooting_steps: [
-      '联调阶段可在 AdMob 后台 Parameter 中填入 MediaGo 官方测试 app_id 与 ad_unit_id 验证。'
+      '联调阶段可在 AdMob 后台 Parameter 中填入 MediaGo Monetization SDK 官方测试 app_id 与 ad_unit_id 验证。'
     ],
     code_fix_hint: '测试 Parameter JSON: {"app_id": "ad2fd73dca2ccffd312495bcd8a33d29", "ad_unit_id": "100090001"}'
   },

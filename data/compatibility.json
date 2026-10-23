@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generated_at": "2026-10-22T16:50:00+08:00",
   "notes": [
-    "This file is the machine-readable compatibility source of truth for MediaGo / AdMaster Ads skills.",
+    "This file is the machine-readable compatibility source of truth for MediaGo Monetization SDK (AdMaster) skills.",
     "Always verify the resolved versions in compatibility.json before adding or upgrading dependencies."
   ],
   "support_window": {
