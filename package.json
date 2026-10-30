@@ -1,7 +1,7 @@
 {
   "name": "mediago_monetization_sdk_mcp",
-  "version": "1.0.0",
-  "description": "Official Model Context Protocol (MCP) Server for MediaGo Monetization SDK (Android & Unity) integration, mediation configuration, error code diagnosis, and Logcat trace analysis.",
+  "version": "1.1.0",
+  "description": "Official Model Context Protocol (MCP) Server & CLI Wizard for MediaGo Monetization SDK (Android & Unity) integration, mediation configuration, static code/Gradle audit, cache queue generation, error diagnosis, and Logcat trace analysis.",
   "main": "src/server.js",
   "bin": {
     "mediago_monetization_sdk_mcp": "./bin/mediago_monetization_sdk_mcp.js"

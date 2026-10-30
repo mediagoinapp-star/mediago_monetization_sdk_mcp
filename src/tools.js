@@ -8,6 +8,13 @@ const {
   TERMINAL_STAGES
 } = require('./data');
 const { getTemplate } = require('./templates');
+const {
+  handleGetTestCredentialsAndValidator,
+  handleAuditHostGradleAndManifest,
+  handleAuditAdIntegrationCode,
+  handleGenerateAdCacheManager,
+  handleVerifyLiveDeviceAds
+} = require('./audit');
 
 const TOOL_DEFINITIONS = [
   {
@@ -109,6 +116,96 @@ const TOOL_DEFINITIONS = [
     }
   },
   {
+    name: 'get_test_credentials_and_validator',
+    description:
+      '下发 MediaGo Monetization SDK 官方测试凭证（32位测试 App ID 与 5 大广告样式测试广告位 ID），并校验宿主传入的 app_id / ad_unit_id 是否合法（自动检测是否把 App ID 与广告位 ID 填反、是否存在首尾空格、是否与目标广告样式不匹配），同时生成 Debug/Release 自动切换凭证的封装代码。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        app_id: {
+          type: 'string',
+          description: '可选：待校验的 MediaGo Monetization SDK App ID（标准为 32 位小写十六进制字符串）'
+        },
+        ad_unit_id: {
+          type: 'string',
+          description: '可选：待校验的广告位 ID / Placement ID（标准为纯数字字符串）'
+        },
+        expected_format: {
+          type: 'string',
+          enum: ['rewarded', 'interstitial', 'native', 'splash', 'banner'],
+          description: '可选：期望绑定的广告样式，用于核对测试广告位 ID 是否拿错样式'
+        },
+        language: {
+          type: 'string',
+          enum: ['java', 'kotlin', 'unity-csharp'],
+          description: '生成 Debug/Release 自动切换凭证代码的目标语言',
+          default: 'java'
+        }
+      }
+    }
+  },
+  {
+    name: 'audit_host_gradle_and_manifest',
+    description:
+      '对宿主 Android 或 Unity 工程执行构建脚本与 AndroidManifest 静态体检：自动检查是否配置 mavenCentral()、SDK 与 Adapter 版本声明、TopOn 新旧双分支 (com.thinkup.sdk vs com.anythink.sdk) 是否混装冲突、minSdk 是否达标，以及 AndroidManifest 合并后是否误用 tools:node="remove" 剔除了 SDK 核心 Activity。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_root: {
+          type: 'string',
+          description: '宿主 Android 或 Unity 工程根目录绝对路径（不填默认使用当前工作目录）'
+        }
+      }
+    }
+  },
+  {
+    name: 'audit_ad_integration_code',
+    description:
+      '扫描宿主工程中的 Java / Kotlin / Unity C# 广告接入源码，自动识别 7 类高频反模式：未等待 onInitialized() 即同步调用 load() (1030003)、onAdFailedToLoad 中无退避延迟同步递归重试 (1040003)、调用 show() 前未检查 isReady() && !isExpired()、在关闭回调而非激励回调中发奖、漏调 destroy()、Client Bidding 传入浮点数 eCPM，以及无 Debug 守卫硬编码测试 ID。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        target_path: {
+          type: 'string',
+          description: '要扫描的宿主源码目录或单个文件绝对路径（不填默认扫描当前工作目录）'
+        }
+      }
+    }
+  },
+  {
+    name: 'generate_ad_cache_manager',
+    description:
+      '生成面向游戏与高频变现场景的生产级全屏广告（RewardedAd / ExpressInterstitialAd）双缓冲预加载队列管理器代码（支持 Java / Kotlin 及 Client Bidding 报价读取）。内置 AtomicBoolean 串行加载锁（防 1040005）、过期缓存自动销毁（防 1040006/3040004）、展示即异步补货（Refill-on-Consume）与指数退避重试（防 1040003）。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ad_format: {
+          type: 'string',
+          enum: ['rewarded', 'interstitial'],
+          description: '要生成缓存管理器的全屏广告样式：rewarded 或 interstitial',
+          default: 'rewarded'
+        },
+        language: {
+          type: 'string',
+          enum: ['java', 'kotlin'],
+          description: '目标开发语言：java 或 kotlin',
+          default: 'java'
+        },
+        cache_capacity: {
+          type: 'number',
+          description: '缓冲队列容量（建议 2，范围 1~4）',
+          default: 2
+        },
+        bidding_mode: {
+          type: 'string',
+          enum: ['standard', 'client-bidding'],
+          description: '是否包含 Client Bidding 最高 eCPM 报价读取辅助方法',
+          default: 'standard'
+        }
+      }
+    }
+  },
+  {
     name: 'diagnose_error_code',
     description:
       '诊断 MediaGo Monetization SDK 广告请求或展示失败错误码。支持客户端 7 位 SDK 错误码（1010001~4030007）、服务端 4 位状态码（2000 无填充、3000~3004 请求异常、4000~4004 DSP 异常、1000~1999 内部错误）以及聚合 Adapter 错误码（AdMob 100~104、TopOn 1001~1007），明确区分“客户端接入 Bug”与“服务端无填充”，并给出重试建议与修复代码。',
@@ -148,6 +245,30 @@ const TOOL_DEFINITIONS = [
         }
       },
       required: ['logcat_text']
+    }
+  },
+  {
+    name: 'verify_live_device_ads',
+    description:
+      '通过本机 ADB 连接真机或模拟器执行端到端动态广告诊断：自动探测在线设备环境（机型、Android 版本、ABI、系统代理状态），拉取最新 Logcat 缓冲区并过滤 MediaGo Monetization SDK 日志，直接串联 analyze_logcat_trace 输出真机生命周期与错误码诊断报告。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        device_serial: {
+          type: 'string',
+          description: '可选：指定目标设备序列号（adb -s <serial>，不填默认取第一台在线设备）'
+        },
+        max_lines: {
+          type: 'number',
+          description: '从 adb logcat -d -t 拉取的最大日志行数（默认 1500，范围 100~10000）',
+          default: 1500
+        },
+        clear_before_capture: {
+          type: 'boolean',
+          description: '是否在拉取前先执行 adb logcat -c 清空旧缓冲区（默认 false）',
+          default: false
+        }
+      }
     }
   }
 ];
@@ -523,6 +644,8 @@ function handleAnalyzeLogcatTrace(args = {}) {
   const funnelEvents = [];
   const moduleLogs = [];
   const hostAdsLogs = [];
+  const aiDoctorReports = [];
+  const aiRuntimeHints = [];
   const detectedErrorCodes = new Set();
 
   // 匹配 7 位客户端错误码或已知服务端码
@@ -537,8 +660,28 @@ function handleAnalyzeLogcatTrace(args = {}) {
       funnelEvents.push(funnel);
     }
 
+    // 解析 SDK IntegrationDoctor 输出的 [AI_DOCTOR_REPORT] <json>
+    const doctorMatch = line.match(/\[AI_DOCTOR_REPORT\]\s*(\{.*\})/);
+    if (doctorMatch) {
+      try {
+        aiDoctorReports.push(JSON.parse(doctorMatch[1]));
+      } catch (_) {
+        aiDoctorReports.push({ raw: doctorMatch[1] });
+      }
+    }
+
+    // 解析 SDK AntiPatternGuard 输出的 [AI-Hint] [RULE_ID] ...
+    const aiHintMatch = line.match(/\[AI-Hint\]\s*(?:\[([A-Z0-9_]+)\])?\s*(.*)$/);
+    if (aiHintMatch) {
+      aiRuntimeHints.push({
+        rule_id: aiHintMatch[1] || 'RUNTIME_AI_HINT',
+        message: aiHintMatch[2].trim(),
+        raw: line.trim()
+      });
+    }
+
     const modMatch = line.match(
-      /AdMaster\/(Init|Request|Material|Splash|Reward|Interstitial|Feed|Banner|Player|Click|Network|Cache|Download)\b[:\s]*(.*)$/i
+      /AdMaster\/(Init|Request|Material|Splash|Reward|Interstitial|Feed|Banner|Player|Click|Network|Cache|Download|Doctor)\b[:\s]*(.*)$/i
     );
     if (modMatch) {
       moduleLogs.push({
@@ -723,12 +866,40 @@ function handleAnalyzeLogcatTrace(args = {}) {
     }
   }
 
-  if (funnelEvents.length === 0 && moduleLogs.length === 0 && diagnosedErrors.length === 0) {
+  for (const hint of aiRuntimeHints) {
+    findings.push(`检测到 SDK 运行时反模式拦截 [AI-Hint] [${hint.rule_id}]：${hint.message}`);
+  }
+
+  for (const report of aiDoctorReports) {
+    if (report && report.status) {
+      findings.push(
+        `检测到 SDK IntegrationDoctor 自检报告：status=${report.status}，checks=${Array.isArray(report.checks) ? report.checks.length : 0} 项`
+      );
+      if (Array.isArray(report.checks)) {
+        for (const chk of report.checks) {
+          if (chk.status === 'FAIL' || chk.status === 'WARN') {
+            findings.push(`  - [Doctor:${chk.id}] (${chk.status}) ${chk.detail}`);
+            if (chk.fix) {
+              recommendations.push(`[Doctor:${chk.id}] ${chk.fix}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (
+    funnelEvents.length === 0 &&
+    moduleLogs.length === 0 &&
+    diagnosedErrors.length === 0 &&
+    aiDoctorReports.length === 0 &&
+    aiRuntimeHints.length === 0
+  ) {
     findings.push(
-      '未在输入文本中识别到 [Funnel] 生命周期日志、AdMaster/<Module> 日志或已知错误码。'
+      '未在输入文本中识别到 [Funnel] 生命周期日志、AdMaster/<Module> 日志、[AI_DOCTOR_REPORT]、[AI-Hint] 或已知错误码。'
     );
     recommendations.push(
-      '请确认已在初始化前开启调试日志：AdMasterSetting.getInstance().setDebugLogEnable(true); 并使用过滤词 `adb logcat | grep -E "Funnel|AdMaster|\\[Ads\\]"` 重新抓取。'
+      '请确认已在初始化前开启调试日志：AdMasterSetting.getInstance().setDebugLogEnable(true); 或执行 `adb shell setprop debug.admaster.doctor 1` 激活零代码自检，并使用过滤词 `adb logcat | grep -E "Funnel|AdMaster|AI_DOCTOR_REPORT|AI-Hint|\\[Ads\\]"` 重新抓取。'
     );
   }
 
@@ -737,6 +908,8 @@ function handleAnalyzeLogcatTrace(args = {}) {
       total_lines_analyzed: lines.length,
       funnel_events_count: funnelEvents.length,
       admaster_module_logs_count: moduleLogs.length,
+      ai_doctor_reports_count: aiDoctorReports.length,
+      ai_runtime_hints_count: aiRuntimeHints.length,
       detected_error_codes: Array.from(detectedErrorCodes),
       request_count: Object.keys(tracesByReq).length
     },
@@ -746,6 +919,8 @@ function handleAnalyzeLogcatTrace(args = {}) {
     },
     request_traces: Object.values(tracesByReq),
     error_diagnoses: diagnosedErrors,
+    ai_doctor_reports: aiDoctorReports,
+    ai_runtime_hints: aiRuntimeHints,
     findings,
     recommendations: Array.from(new Set(recommendations))
   };
@@ -759,10 +934,20 @@ function callTool(name, args = {}) {
       return handleGetAdIntegrationTemplate(args);
     case 'get_mediation_adapter_config':
       return handleGetMediationAdapterConfig(args);
+    case 'get_test_credentials_and_validator':
+      return handleGetTestCredentialsAndValidator(args);
+    case 'audit_host_gradle_and_manifest':
+      return handleAuditHostGradleAndManifest(args);
+    case 'audit_ad_integration_code':
+      return handleAuditAdIntegrationCode(args);
+    case 'generate_ad_cache_manager':
+      return handleGenerateAdCacheManager(args);
     case 'diagnose_error_code':
       return handleDiagnoseErrorCode(args);
     case 'analyze_logcat_trace':
       return handleAnalyzeLogcatTrace(args);
+    case 'verify_live_device_ads':
+      return handleVerifyLiveDeviceAds(args, handleAnalyzeLogcatTrace);
     default:
       throw new Error(`Unknown tool: ${name}`);
   }

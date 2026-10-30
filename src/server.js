@@ -4,7 +4,7 @@ const { TOOL_DEFINITIONS, callTool } = require('./tools');
 
 const SERVER_INFO = {
   name: 'mediago_monetization_sdk_mcp',
-  version: '1.0.0'
+  version: '1.1.0'
 };
 
 const DEFAULT_PROTOCOL_VERSION = '2024-11-05';
